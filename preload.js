@@ -10,6 +10,9 @@ window.addEventListener('DOMContentLoaded', () => {
   let url = ipcRenderer.sendSync('get-url', null);
   console.log(url);
   var webview = document.getElementById('wrapper');
+  if(url==''||url==undefined){
+    webview.src = "https://github.com/claudeth1919/WrapperForm";
+  }
   webview.src = url;
   
   for (const type of ['chrome', 'node', 'electron']) {

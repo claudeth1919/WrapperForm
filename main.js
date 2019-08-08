@@ -4,6 +4,14 @@ const path = require('path')
 const fs = require('fs')
 const { ipcMain } = require('electron')
 
+
+let urlParam = process.argv[2];
+if (urlParam != undefined) {
+  setUrl(urlParam);
+} else {
+  getUrlByFile();
+}
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -19,47 +27,66 @@ function createWindow () {
     }
     , frame: false
   }
-  setTimeout(function () {
-    mainWindow = new BrowserWindow(option)
-    mainWindow.loadFile('index.html')
-    mainWindow.setMenu(null)
-    // and load the index.html of the app.
+  
+  mainWindow = new BrowserWindow(option)
+  mainWindow.loadFile('index.html')
+  mainWindow.setMenu(null)
+  // and load the index.html of the app.
 
-    //mainWindow.maximize()
+  //mainWindow.maximize()
 
-    // Open the DevTools.
-    //mainWindow.webContents.openDevTools()
+  // Open the DevTools.
+  //mainWindow.webContents.openDevTools()
 
 
 
-    // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
-      // Dereference the window object, usually you would store windows
-      // in an array if your app supports multi windows, this is the time
-      // when you should delete the corresponding element.
-      mainWindow = null
-      
-  }, 0);
-
+  // Emitted when the window is closed.
+  mainWindow.on('closed', function () {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+  mainWindow = null
   
   })
 }
 
 //FILES READING
-fs.readFile("./configuration.json","utf-8",(err,data)=>{
-  if(err){
-    console.log("error reading file");
-    return;
+
+
+
+function getUrlByFile() {
+  let content = "{\n\t \"url\" : \"https://github.com/claudeth1919/WrapperForm\"\n}";
+
+  try {
+    console.log(__dirname + '\\configuration.json');
+    if (!fs.existsSync(__dirname + '\\configuration.json')) {
+      fs.writeFileSync('configuration.json', content, 'utf-8');
+    }
   }
-  let json = JSON.parse(data)
-  console.log(json.url);
-  let url = json.url;
-  mainWindow.webContents.send("url", url);
+  catch (e) {
+    console.log('Failed to create the file !');
+  }
+
+  fs.readFile(__dirname + "\\configuration.json", "utf-8", (err, data) => {
+    if (err) {
+      console.log("error reading file");
+      return;
+    }
+    let json = JSON.parse(data)
+    console.log(json.url);
+    setUrl(json.url);
+  })
+}
+
+
+function setUrl(url){
   ipcMain.on('get-url', (event, arg) => {
     console.log("url request");
     event.returnValue = url
   })
-})
+}
+
+
 
 
 
