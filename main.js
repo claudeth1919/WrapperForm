@@ -1,6 +1,8 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const fs = require('fs')
+const { ipcMain } = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -12,15 +14,23 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
+      preload: path.join(__dirname, 'preload.js'),
+      webviewTag: true,
+      nodeIntegration: true
+    },
+    frame: false,
   })
+
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+  mainWindow.setMenu(null)
+  //mainWindow.maximize()
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+   mainWindow.webContents.openDevTools()
+
+  
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -30,6 +40,25 @@ function createWindow () {
     mainWindow = null
   })
 }
+
+//FILES READING
+fs.readFile("./configuration.json","utf-8",(err,data)=>{
+  if(err){
+    console.log("error reading file");
+    return;
+  }
+  let json = JSON.parse(data)
+  console.log(json.url);
+  let url = json.url;
+  mainWindow.webContents.send("url", url);
+  ipcMain.on('get-url', (event, arg) => {
+    console.log("url request");
+    event.returnValue = url
+  })
+})
+
+
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

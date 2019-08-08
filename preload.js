@@ -5,6 +5,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const element = document.getElementById(selector)
     if (element) element.innerText = text
   } 
+
+  const { ipcRenderer } = require('electron')
+  let url = ipcRenderer.sendSync('get-url', null);
+  console.log(url);
+  var webview = document.getElementById('wrapper');
+  webview.src = url;
   
   for (const type of ['chrome', 'node', 'electron']) {
     replaceText(`${type}-version`, process.versions[type])
