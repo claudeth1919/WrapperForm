@@ -5,7 +5,11 @@ const fs = require('fs')
 const { ipcMain } = require('electron')
 
 
-let urlParam = process.argv[2];
+let urlParam = process.argv[1] == undefined || process.argv[1] == '.' || process.argv[1] == '' ? process.argv[2] : process.argv[1];
+console.log("ARG 1: " + process.argv[0]);
+console.log("ARG 2: " + process.argv[1]);
+console.log("ARG 3: " + process.argv[2]);
+console.log("Current: " + urlParam);
 if (urlParam != undefined) {
   setUrl(urlParam);
 } else {
