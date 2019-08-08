@@ -10,34 +10,38 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
+  let option = {
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      webviewTag: true,
-      nodeIntegration: true
-    },
-    frame: false,
-  })
+      webviewTag: true
+    }
+    , frame: false
+  }
+  setTimeout(function () {
+    mainWindow = new BrowserWindow(option)
+    mainWindow.loadFile('index.html')
+    mainWindow.setMenu(null)
+    // and load the index.html of the app.
+
+    //mainWindow.maximize()
+
+    // Open the DevTools.
+    //mainWindow.webContents.openDevTools()
 
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
-  mainWindow.setMenu(null)
-  //mainWindow.maximize()
 
-  // Open the DevTools.
-   //mainWindow.webContents.openDevTools()
+    // Emitted when the window is closed.
+    mainWindow.on('closed', function () {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
+      mainWindow = null
+      
+  }, 0);
 
   
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
   })
 }
 
